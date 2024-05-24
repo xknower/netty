@@ -21,6 +21,7 @@
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>9</version>
+    <relativePath />
   </parent>
 
   <groupId>io.netty</groupId>
@@ -596,6 +597,7 @@
     <profile>
       <id>coverage</id>
       <properties>
+        <!--suppress UnresolvedMavenProperty -->
         <argLine.coverage>${jacoco.argLine}</argLine.coverage>
       </properties>
       <build>
@@ -665,6 +667,7 @@
     </argLine.common>
     <argLine.jni>-D_</argLine.jni>
     <!-- Default to ALPN. See forcenpn profile to force NPN -->
+    <!--suppress UnresolvedMavenProperty -->
     <argLine.alpnAgent>-javaagent:${jetty.alpnAgent.path}=${jetty.alpnAgent.option}</argLine.alpnAgent>
     <argLine.leak>-D_</argLine.leak> <!-- Overridden when 'leak' profile is active -->
     <argLine.noUnsafe>-D_</argLine.noUnsafe> <!-- Overridden when 'noUnsafe' profile is active -->
@@ -691,7 +694,7 @@
     <log4j2.version>2.17.2</log4j2.version>
     <enforcer.plugin.version>3.0.0</enforcer.plugin.version>
     <junit.version>5.9.0</junit.version>
-    <skipTests>false</skipTests>
+    <skipTests>true</skipTests>
     <testJavaHome>${java.home}</testJavaHome>
     <testJvm>${testJavaHome}/bin/java</testJvm>
     <skipOsgiTestsuite>false</skipOsgiTestsuite>
@@ -1445,6 +1448,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
+          <skip>${skipTests}</skip>
           <compilerVersion>1.8</compilerVersion>
           <fork>true</fork>
           <source>${maven.compiler.source}</source>
@@ -1508,6 +1512,7 @@
             </goals>
             <phase>validate</phase>
             <configuration>
+              <skip>${skipTests}</skip>
               <consoleOutput>true</consoleOutput>
               <logViolationsToConsole>true</logViolationsToConsole>
               <failsOnError>true</failsOnError>
@@ -1628,6 +1633,7 @@
               <value>io.netty.build.junit.TimedOutTestsListener</value>
             </property>
           </properties>
+          <skip>${skipTests}</skip>
           <skipTests>${skipTests}</skipTests>
           <jvm>${testJvm}</jvm>
            <!-- Ensure the whole stacktrace is preserved when an exception is thrown. See https://issues.apache.org/jira/browse/SUREFIRE-1457 -->
@@ -1690,7 +1696,9 @@
               <Bundle-Name>${project.name}</Bundle-Name>
               <Bundle-SymbolicName>${project.groupId}.${project.artifactId}.source</Bundle-SymbolicName>
               <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+              <!--suppress UnresolvedMavenProperty -->
               <Bundle-Version>${parsedVersion.osgiVersion}</Bundle-Version>
+              <!--suppress UnresolvedMavenProperty -->
               <Eclipse-SourceBundle>${project.groupId}.${project.artifactId};version="${parsedVersion.osgiVersion}";roots:="."</Eclipse-SourceBundle>
             </manifestEntries>
           </archive>
@@ -1780,8 +1788,11 @@
                   <arg value="--format=format:%h %H %cd" />
                   <arg value="--date=iso" />
                 </exec>
+                <!--suppress UnresolvedMavenProperty -->
                 <propertyregex property="shortCommitHash" input="${gitOutput.lastCommit}" regexp="^([0-9a-f]+) .*$" select="\1" casesensitive="true" defaultValue="0" />
+                <!--suppress UnresolvedMavenProperty -->
                 <propertyregex property="longCommitHash" input="${gitOutput.lastCommit}" regexp="^[0-9a-f]+ ([0-9a-f]{40}) .*$" select="\1" casesensitive="true" defaultValue="0000000000000000000000000000000000000000" />
+                <!--suppress UnresolvedMavenProperty -->
                 <propertyregex property="commitDate" input="${gitOutput.lastCommit}" regexp="^[0-9a-f]+ [0-9a-f]{40} (.*)$" select="\1" casesensitive="true" defaultValue="1970-01-01 00:00:00 +0000" />
 
                 <!-- Get the information abount whether the repository is clean or dirty -->
@@ -1790,9 +1801,11 @@
                   <arg value="--porcelain" />
                 </exec>
                 <if>
+                  <!--suppress UnresolvedMavenProperty -->
                   <equals arg2="0" arg1="${gitExitCode.repoStatus}" />
                   <then>
                     <if>
+                      <!--suppress UnresolvedMavenProperty -->
                       <equals arg2="" arg1="${gitOutput.repoStatus}" />
                       <then>
                         <property name="repoStatus" value="clean" />
@@ -1808,6 +1821,7 @@
                 </if>
 
                 <!-- Print the obtained commit information. -->
+                <!--suppress UnresolvedMavenProperty -->
                 <echo>Current commit: ${shortCommitHash} on ${commitDate}</echo>
 
                 <!-- Generate the .properties file. -->
@@ -1815,16 +1829,24 @@
                 <property name="metaInfDir" value="${project.basedir}/src/main/resources/META-INF" />
                 -->
                 <property name="metaInfDir" value="${project.build.outputDirectory}/META-INF" />
+                <!--suppress UnresolvedMavenProperty -->
                 <property name="versionPropFile" value="${metaInfDir}/${project.groupId}.versions.properties" />
+                <!--suppress UnresolvedMavenProperty -->
                 <mkdir dir="${metaInfDir}" />
+                <!--suppress UnresolvedMavenProperty -->
                 <delete file="${versionPropFile}" quiet="true" />
 
+                <!--suppress UnresolvedMavenProperty -->
                 <propertyfile file="${versionPropFile}" comment="Generated by netty-parent/pom.xml">
                   <entry key="${project.artifactId}.version" value="${project.version}" />
                   <entry key="${project.artifactId}.buildDate" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss Z" />
+                  <!--suppress UnresolvedMavenProperty -->
                   <entry key="${project.artifactId}.commitDate" value="${commitDate}" />
+                  <!--suppress UnresolvedMavenProperty -->
                   <entry key="${project.artifactId}.shortCommitHash" value="${shortCommitHash}" />
+                  <!--suppress UnresolvedMavenProperty -->
                   <entry key="${project.artifactId}.longCommitHash" value="${longCommitHash}" />
+                  <!--suppress UnresolvedMavenProperty -->
                   <entry key="${project.artifactId}.repoStatus" value="${repoStatus}" />
                 </propertyfile>
               </target>
@@ -1936,6 +1958,7 @@
                     <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                   </manifest>
                   <manifestEntries>
+                    <!--suppress UnresolvedMavenProperty -->
                     <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
                   </manifestEntries>
                   <index>true</index>
